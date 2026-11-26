@@ -81,7 +81,7 @@ const Detail = (props) => {
       <Row>
         <Col md={6}>
           <img
-            src={import.meta.env.BASE_URL + selproduct.imgUrl}
+            src={import.meta.env.BASE_URL + selproduct.imgUrl.replace(/^\/+/, '')}
             width="100%"
             alt="shoes"
           />
