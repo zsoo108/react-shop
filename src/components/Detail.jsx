@@ -1,122 +1,127 @@
-import React, { useEffect, useState } from 'react'
-import { useParams } from 'react-router-dom';
-import TabContent from './TabContent';
-import '../App.css'
+import React, { useEffect, useState } from 'react';
+import { Col, Container, Row, Button, Nav, Alert } from 'react-bootstrap';
+import { useNavigate, useParams } from 'react-router-dom';
+import TabContent from '../components/TabContent';
 import styled from 'styled-components';
+import { useDispatch } from 'react-redux';
+import { addItem } from '../features/cartSlice';
 
 const Box = styled.div`
-    padding: 20px 0;
-    color: gray;
-`;
+  padding: 20px;
+  color: gray;
+`
 
-const YelloBtn = styled.button`
-    color: white;
-    font-size: 30px;
-    width: 100%;
-    padding: 100px;
-    border: 1px solid #ccc;
-    background-image: url('https://images.unsplash.com/photo-1549298916-b41d501d3772?q=80&w=1112&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=NHwxMjA3fDA%3D');
-    background-size: cover;
-    background-position:center;
-    // background: ${props => props.bg};
-    // color: ${props => props.bg == 'blue'? 'white': 'black'};
-    // padding: 10px;
-`;
-
+const YellowBtn = styled.button`
+  color: white;
+  font-size: 30px;
+  width: 100%;
+  padding: 100px;
+  border: 1px solid #ccc;
+  background-image: url(https://images.unsplash.com/photo-1595341888016-a392ef81b7de?q=80&w=1179&auto=format&fit=crop);
+  background-size: cover;
+  background-position: center;
+`
 
 const Detail = (props) => {
-    const {id} = useParams();
-    console.log(id);
-    const {shoes} = props;
-    const [tab, setTab] = useState(0);
-    const [alert, setAlert] = useState(true);
-    const [fade, setFade] = useState('');
 
-    let selproduct = shoes.find(x => x.id == parseInt(id))
+  const { shoes } = props;
+  const { id } = useParams();
 
-    useEffect(()=>{
-        const timer = setTimeout(()=>{setAlert(false)}, 2000);
-        const aniTimer = setTimeout(()=>{setFade('end')}, 50);
-        return () => {
-            // clean-up function
-            setFade('');
-            clearTimeout(aniTimer);
-            clearTimeout(timer);
-        }
-    }, [])
+  let selproduct = shoes.find(x => x.id == id);
 
-    return (
-        <div className={"max-w-7xl mx-auto px-4 w-full py-8 start " + fade}>
-            {
-                alert === true &&
-                <div className="bg-yellow-50 border border-yellow-200 text-yellow-800 px-4 py-3 rounded-lg font-medium w-full text-center">
-                    2초이내 구매시 할인
-                </div>
-            }
+  const [tab, setTab] = useState(0);
+  const [alert, setAlert] = useState(true);
+  const [show, setShow] = useState('');
 
-            <Box>
-                <YelloBtn>지금 구매하면 10% 할인</YelloBtn>
-            </Box>
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
-                <div className="w-full">
-                    <img src={selproduct.imgUrl} alt="상품 이미지" className="w-full h-auto" />
-                </div>
+  const moveCart = () => {
+    dispatch(addItem({
+      id: selproduct.id,
+      imgUrl: selproduct.imgUrl,
+      item: selproduct.title,
+      price: selproduct.price,
+      amount: 1
+    }));
 
-                <div className="pt-5 md:pt-0 space-y-4">
-                    <h4 className="text-2xl font-bold text-gray-900">{selproduct.title}</h4>
-                    <p className="text-gray-600 leading-relaxed">{selproduct.content}</p>
-                    <p className="text-xl font-semibold text-gray-900">{selproduct.price}원</p>
-                    <button className="bg-red-600 hover:bg-red-700 text-white font-medium px-6 py-2.5 rounded-lg transition-colors shadow-md active:scale-95 transform">
-                        주문하기
-                    </button>
-                </div>
-            </div>
+    if (window.confirm('장바구니로 이동하시겠습니까?')) {
+      navigate('/cart');
+    }
+  }
 
-            <ul className="flex border-b border-gray-200 list-none p-0 m-0">
-                <li onClick={() => setTab(0)}
-                    className={`px-4 py-2 text-sm font-medium transition-colors duration-200 -mb-[1px] border-b-2 cursor-pointer select-none ${tab === 0
-                        ? 'border-blue-600 text-blue-600 font-semibold' // 활성화 스타일
-                        : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300' // 비활성화 스타일
-                        }`}
-                >
-                    버튼0
-                </li>
+  useEffect(() => {
+    const alertTimer = setTimeout(() => {
+      setAlert(false);
+    }, 2000);
 
-                <li onClick={() => setTab(1)}
-                    className={`px-4 py-2 text-sm font-medium transition-colors duration-200 -mb-[1px] border-b-2 cursor-pointer select-none ${tab === 1
-                        ? 'border-blue-600 text-blue-600 font-semibold'
-                        : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-                        }`}
-                >
-                    버튼1
-                </li>
-                <li onClick={() => setTab(2)}
-                    className={`px-4 py-2 text-sm font-medium transition-colors duration-200 -mb-[1px] border-b-2 cursor-pointer select-none ${tab === 2
-                        ? 'border-blue-600 text-blue-600 font-semibold'
-                        : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-                        }`}
-                >
-                    버튼2
-                </li>
-            </ul>
-            
-            {/* <div tab={tab}>
-                {(()=>{
-                    if(tab === 0){
-                        return <div>내용0</div>
-                    }else if (tab === 1){
-                        return <div>내용1</div>
-                    }else if (tab === 2) {
-                        return <div>내용2</div>
-                    }
-                })()} 
-            </div> */}
-            
-            <TabContent tab={tab} />
+    const showTimer = setTimeout(() => {
+      setShow('end');
+    }, 50);
 
-        </div>
-    )
+    return () => {
+      clearTimeout(alertTimer);
+      clearTimeout(showTimer);
+      setShow('');
+    }
+  }, []);
+
+  return (
+    <Container className={`start ${show}`}>
+      {
+        alert === true
+          ? <Alert variant='warning'>2초 이내 구매시 할인</Alert>
+          : null
+      }
+
+      <Box>
+        <YellowBtn>지금 구매하면 10% 할인</YellowBtn>
+      </Box>
+
+      <Row>
+        <Col md={6}>
+          <img
+            src={import.meta.env.BASE_URL + selproduct.imgUrl}
+            width="100%"
+            alt="shoes"
+          />
+        </Col>
+
+        <Col md={6}>
+          <h4 className='pt-5'>{selproduct.title}</h4>
+          <p>{selproduct.content}</p>
+          <p>{selproduct.price}</p>
+
+          <Button variant="success" onClick={moveCart}>
+            장바구니
+          </Button>
+        </Col>
+      </Row>
+
+      <Nav variant="tabs" defaultActiveKey="link-0">
+        <Nav.Item>
+          <Nav.Link eventKey="link-0" onClick={() => { setTab(0) }}>
+            탭0
+          </Nav.Link>
+        </Nav.Item>
+
+        <Nav.Item>
+          <Nav.Link eventKey="link-1" onClick={() => { setTab(1) }}>
+            탭1
+          </Nav.Link>
+        </Nav.Item>
+
+        <Nav.Item>
+          <Nav.Link eventKey="link-2" onClick={() => { setTab(2) }}>
+            탭2
+          </Nav.Link>
+        </Nav.Item>
+      </Nav>
+
+      <TabContent tab={tab} />
+
+    </Container>
+  )
 }
 
-export default Detail
+export default Detail;
