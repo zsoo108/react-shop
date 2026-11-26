@@ -84,7 +84,7 @@ const Detail = (props) => {
             src={import.meta.env.BASE_URL + selproduct.imgUrl.replace(/^\/+/, '')}
             width="100%"
             alt="shoes"
-          />
+            />
         </Col>
 
         <Col md={6}>
